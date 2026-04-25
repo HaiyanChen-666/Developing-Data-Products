@@ -1,0 +1,181 @@
+---
+title: "Colorado_State_University_Interactive_Map"
+author: "HaiyanChen"
+date: "2026-04-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+This project creates an interactive map of Colorado State University. The map visualizes selected locations, including residence halls, the Department of Environmental and Radiological Health Sciences (ERHS), Morgan Library, Curfman Gallery, and the CSU Health and Medical Center. Different categories of locations are displayed using different colors to improve visual interpretation.
+
+
+```{r echo = TRUE}
+# Prepare the latitude and longitude for locations
+# Create a data frame of CSU locations
+csu_points <- data.frame(
+    name = c(
+        "Academic Village",
+        "Allison Hall",
+        "Braiden Hall",
+        "Corbett Hall",
+        "Durward Hall",
+        "Edwards Hall",
+        "Ingersoll Hall",
+        "Laurel Village",
+        "Newsom Hall",
+        "Parmelee Hall",
+        "Summit Hall",
+        "Westfall Hall",
+        "ERHS (Environmental and Radiological Health Sciences)",
+        "Morgan Library",
+        "Curfman Gallery",
+        "CSU Health and Medical Center"
+    ),
+    
+    lat = c(
+        40.57229873780172,
+        40.577516412251,
+        40.571804112705706,
+        40.5772034646794,
+        40.57771340136919,
+        40.57193011056468,
+        40.57203135606741,
+        40.59651617661135,
+        40.57183166219014,
+        40.57730509773882,
+        40.57049051574559,
+        40.5773778998063,
+        40.56921445699542,
+        40.5733053548333,
+        40.57423186205259,
+        40.56836371306185
+    ),
+    
+    lng = c(
+        -105.09025109285038,
+        -105.08550190207693,
+        -105.08556959042771,
+        -105.09008520392229,
+        -105.09317534625215,
+        -105.09271571741739,
+        -105.09469442664427,
+        -105.09153954856284,
+        -105.08905084071641,
+        -105.08909270392229,
+        -105.0932993671289,
+        -105.09411310392237,
+        -105.0822237892409,
+        -105.08469658858232,
+        -105.08467347897388,
+        -105.0777932732809
+    ),
+    
+    # Group each location by type
+    type = c(
+        rep("dorm", 12),
+        "college",
+        "library",
+        "gallery",
+        "medical"
+    )
+)
+
+library(leaflet)
+
+# Build the base map
+leaflet(csu_points) %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    
+    # Add clustered dorm locations
+    addCircleMarkers(
+        data = subset(csu_points, type == "dorm"),
+        lng = ~lng,
+        lat = ~lat,
+        color = "#2E86DE",
+        fillColor = "#2E86DE",
+        fillOpacity = 0.85, # Set marker transparency
+        radius = 7, # Set marker size
+        stroke = TRUE,  # Add a border around each marker
+        weight = 1,  # Set border thickness
+        popup = ~paste0("<b>", name, "</b><br/>Type: ", type), # Show name and type in popup
+        label = ~name,  # Show location name on hover
+        clusterOptions = markerClusterOptions() # Cluster nearby markers
+    ) %>%
+    
+    # Add clustered college location
+    addCircleMarkers(
+        data = subset(csu_points, type == "college"),
+        lng = ~lng,
+        lat = ~lat,
+        color = "#E74C3C",
+        fillColor = "#E74C3C",
+        fillOpacity = 0.85,
+        radius = 7,
+        stroke = TRUE,
+        weight = 1,
+        popup = ~paste0("<b>", name, "</b><br/>Type: ", type),
+        label = ~name,
+        clusterOptions = markerClusterOptions()
+    ) %>%
+    
+    # Add clustered library location
+    addCircleMarkers(
+        data = subset(csu_points, type == "library"),
+        lng = ~lng,
+        lat = ~lat,
+        color = "#27AE60",
+        fillColor = "#27AE60",
+        fillOpacity = 0.85,
+        radius = 7,
+        stroke = TRUE,
+        weight = 1,
+        popup = ~paste0("<b>", name, "</b><br/>Type: ", type),
+        label = ~name,
+        clusterOptions = markerClusterOptions()
+    ) %>%
+    
+    # Add clustered gallery location
+    addCircleMarkers(
+        data = subset(csu_points, type == "gallery"),
+        lng = ~lng,
+        lat = ~lat,
+        color = "#8E44AD",
+        fillColor = "#8E44AD",
+        fillOpacity = 0.85,
+        radius = 7,
+        stroke = TRUE,
+        weight = 1,
+        popup = ~paste0("<b>", name, "</b><br/>Type: ", type),
+        label = ~name,
+        clusterOptions = markerClusterOptions()
+    ) %>%
+    
+    # Add clustered medical location
+    addCircleMarkers(
+        data = subset(csu_points, type == "medical"),
+        lng = ~lng,
+        lat = ~lat,
+        color = "#F39C12",
+        fillColor = "#F39C12",
+        fillOpacity = 0.85,
+        radius = 7,
+        stroke = TRUE,
+        weight = 1,
+        popup = ~paste0("<b>", name, "</b><br/>Type: ", type),
+        label = ~name,
+        clusterOptions = markerClusterOptions()
+    ) %>%
+    
+    # Add a legend for location types
+    addLegend(
+        position = "bottomright",
+        colors = c("#2E86DE", "#E74C3C", "#27AE60", "#8E44AD", "#F39C12"),
+        labels = c("dorm", "college", "library", "gallery", "medical"),
+        title = "CSU Location Types",
+        opacity = 1
+    )
+```
